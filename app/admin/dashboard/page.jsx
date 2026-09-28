@@ -164,21 +164,22 @@ export default function DashboardPage() {
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart>
                   <Pie
-                    data={stats.byType}
+                    data={stats.byType.map((t, i) => ({
+                      ...t,
+                      fill: PIE_COLORS[i % PIE_COLORS.length],
+                    }))}
                     dataKey="count"
                     nameKey="label"
                     cx="50%"
                     cy="45%"
                     outerRadius={85}
-                    label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
-                    labelLine={false}
-                    shape={(props) => {
-                      const { fill: _unused, index, ...rest } = props;
-                      return <path {...rest} fill={PIE_COLORS[index % PIE_COLORS.length]} />;
-                    }}
+                    label={({ name, percent }) =>
+                      `${(percent * 100).toFixed(0)}%`
+                    }
+                    labelLine={true}
                   />
-                  <Tooltip formatter={(v, n) => [v, n]} />
-                  <Legend iconSize={10} wrapperStyle={{ fontSize: 11 }} />
+                  <Tooltip formatter={(v, n) => [v + ' báo cáo', n]} />
+                  <Legend iconSize={12} wrapperStyle={{ fontSize: 12 }} />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
