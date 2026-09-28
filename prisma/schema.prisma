@@ -1,0 +1,58 @@
+// Prisma Schema for Scam Reporting App
+// Database: SQLite (local dev) — switch provider to "postgresql" for Vercel + Neon
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Report: mỗi báo cáo tương ứng 1 đối tượng lừa đảo
+model Report {
+  id            String   @id @default(cuid())
+
+  // Thông tin người báo cáo (tùy chọn / ẩn danh)
+  isAnonymous   Boolean  @default(false)
+  reporterName  String?
+  reporterPhone String?
+
+  // Thông tin đối tượng và sự việc
+  fraudType     String   // fake_police | fake_bank | lottery | fake_job | investment | other
+  targetPhone   String   // số điện thoại hoặc tài khoản của đối tượng lừa đảo
+  description   String
+  financialLoss Float?   // thiệt hại ước tính (VNĐ), null nếu chưa mất
+
+  // Thời gian
+  incidentAt    DateTime // thời gian xảy ra sự việc (người dùng nhập)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Xử lý
+  status        String   @default("new") // new | processing | resolved
+
+  // File bằng chứng (JSON array: [{name, path}])
+  evidenceFiles String?
+
+  // Cảnh báo khẩn: true nếu đối tượng bị báo cáo >= 3 lần trong 7 ngày
+  isUrgent      Boolean  @default(false)
+
+  @@index([targetPhone])
+  @@index([createdAt])
+  @@index([status])
+  @@index([isUrgent])
+}
+
+// User: cán bộ trực và admin
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  fullName     String
+  role         String   @default("officer") // officer | admin
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  lastLoginAt  DateTime?
+}
