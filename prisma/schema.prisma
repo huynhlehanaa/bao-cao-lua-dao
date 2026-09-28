@@ -1,12 +1,12 @@
 // Prisma Schema for Scam Reporting App
-// Database: SQLite (local dev) — switch provider to "postgresql" for Vercel + Neon
+// Database: PostgreSQL (Neon) — Prisma 5.10+
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
